@@ -5,6 +5,7 @@ namespace frontend\models;
 use common\models\User;
 use yii\base\InvalidArgumentException;
 use yii\base\Model;
+use common\models\UserStatusActive;
 
 class VerifyEmailForm extends Model
 {
@@ -46,7 +47,7 @@ class VerifyEmailForm extends Model
     public function verifyEmail()
     {
         $user = $this->_user;
-        $user->status = User::STATUS_ACTIVE;
+        $user->status = UserStatusActive::CODE;
         return $user->save(false) ? $user : null;
     }
 }
