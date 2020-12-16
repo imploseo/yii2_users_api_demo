@@ -2,59 +2,18 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
     </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
+    <h1 align="center">Тестовое задание REST API на Yii 2</h1>
     <br>
 </p>
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
-
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
-
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
-
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
-
-DIRECTORY STRUCTURE
--------------------
-
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
+Вот как была поставлена задача Шевченко Павлу для тестового задания потенциальным работодателем:<br>Написать апи сервер, который будет работать с 1 моделью user, в юзере поля: id, name, createat, updateat, status, реализовать методы добавления, изменения, удаления, просмотр + композер скрипт создать + написать тесты + консольную утилиту сделать, которая сохранит таблицу в эксель. наплодить 5-10 пользователей. консольная утилита должна запускаться через метод апи.
+<br><br>
+А далее я напишу пояснения к моей реализации пунктов из этого задания:<br>
+1). За основу взял репозиторий шаблона приложения Yii2-advanced. В composer.json добавил библиотеку PHPExcel, которая используется далее.<br>
+2). В модели User реализовал паттерн Состояние, т.к. статусов у пользователей может быть много, и тогда сопутствующую логику переключений из одних состояний в другие будет нецелесообразно размещать в классе модели - для примера я сделал запрет на прямой перевод из удалённого состояния в активное. Также настроил правила валидации полей модели и поведение для обновления полей createdAt и updatedAt.<br>
+3). Для API реализовал версионирование и валидацию по секретному токену (в HTTP заголовках) для запросов на добавление, обновление или удаление пользователя, при этом при удалении пользователь не удаляется из БД, а переводится в статус "Deleted".<br>
+4). Помимо реализации описанного выше контроллера запросов к /api_v1/users/ добавил в него возможность обработки запросов к /api_v1/users/excel - для запуска консольной утилиты генерации Excel-файла с таблицей пользователей имеющих статус не "Deleted".<br>
+5). Сделал консольную утилиту, файл с указанием даты и времени сохраняется в заданной относительно корня сайта директории (в папку /excel).<br>
+6). Для генерации пользователей добавил миграции.<br>
+7). Написал тесты для CRUD методов REST API, запускать (поменяв REST_API_SITE_URL) отдельно от коробочных yii2-demo тестов (т.к. я менял структуру таблицы и модель пользователя), т.е: codecept run frontend/tests/unit/UserRestApiUnitTest.php<br>
+8). Загрузил на гитхаб, основное внимание следует обращать на предпоследний коммит, в нём я сосредоточил основные значимые для выполнения тестового задания файлы.
